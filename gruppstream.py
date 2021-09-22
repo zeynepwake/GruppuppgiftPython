@@ -1,7 +1,6 @@
 import streamlit as st
 #from PIL import image
 
-#from API_interface.py import *
 
 st.header('Hello and Welcome!')
 
