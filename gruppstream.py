@@ -1,17 +1,39 @@
 import streamlit as st
+#from PIL import image
 
 #from API_interface.py import *
 
-st.write('Hello and Welcome!')
-st.button('REGISTER')
-st.button('LOGIN')
-user_name = st.text_input('What shall we call you?')
-password= st.text_input('Please enter your password')
+st.header('Hello and Welcome!')
+
+page = st.sidebar.selectbox('Choose', ['Register', 'Login'])
+
+if page =='Register':
+    with st.form('New User'):
+    #st.write('New User')
+        user_name = st.text_input('Please enter your user name')
+        password= st.text_input('Chooes a password')
+        finished =st.form_submit_button('Register')
+    if finished:
+        # call a function
+        # register to db
+
+        pass
 
 
-st.button('Enter and Save')
-st.write('Hello', user_name,'!')
-chosen_model= st.selectbox('Please select a model', ['Text Generator', 'Sentimental Analysis', 'QA'])
+elif page=='Login':
+    with st.form('Login'):
+        user_name = st.text_input('Please enter your user name')
+        password= st.text_input('Enter your password')
+        finished =st.form_submit_button('Login')
+    if finished:
+        # call a function,
+        # compare to db
+         st.write('Hello', user_name)
+
+
+chosen_model= st.sidebar.selectbox('Please select a model', ['Text Generator', 'Sentimental Analysis', 'QA'])
+
+
 #user_input= st.multiselect('Please select a model', ['Text Generator', 'Sentimental Analysis', 'QA'], ['Text Generator'])
 st.write('You made your choice', chosen_model, '!')
 if st.button('Shoot'):
