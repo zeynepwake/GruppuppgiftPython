@@ -28,25 +28,27 @@ elif page=='Login':
     if finished:
         # call a function,
         # compare to db
-         st.write('Hello', user_name)
-
+        st.write('Hello', user_name)
+    
 
 chosen_model= st.sidebar.selectbox('Please select a model', ['Text Generator', 'Sentimental Analysis', 'QA'])
+if chosen_model == 'QA':
+    user_text_input = st.text_input('What say you?, text please')
+    user_question= st.text_input('.. and the question?')
+    st.button('Send')
+    # to db samt to ml via api etc
+else:
+    user_text_input = st.text_input('What say you?')
+    st.button('Send')
 
 
+
+
+
+#st.write('lets see...')
 #user_input= st.multiselect('Please select a model', ['Text Generator', 'Sentimental Analysis', 'QA'], ['Text Generator'])
-st.write('You made your choice', chosen_model, '!')
-if st.button('Shoot'):
-    if chosen_model == 'QA':
-        user_text_input = st.text_input('What say you?')
-        user_question= st.text_input('.. and the question?')
-
-    else:
-        user_text_input = st.text_input('What say you?')
-
-    st.write('lets see...')
-
-
+#st.write('You made your choice', chosen_model, '!')
+#if st.button('Shoot'):
 
 
 # ml api blöa bla
