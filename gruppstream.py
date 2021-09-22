@@ -1,10 +1,18 @@
 import streamlit as st
 #from PIL import image
 
+#from API_interface.py import *#
 
-st.header('Hello and Welcome!')
+#[theme]
+#base="light"
+#primaryColor="purple"
 
-page = st.sidebar.selectbox('Choose', ['Register', 'Login'])
+st.title('Models by Jakob, Szandra and Zeynep!')
+
+page = st.sidebar.button('Register') # add to db
+page = st.sidebar.button('Login') # compare to db
+history = st.sidebar.button('My history') # connect to db
+
 
 if page =='Register':
     with st.form('New User'):
@@ -12,6 +20,7 @@ if page =='Register':
         user_name = st.text_input('Please enter your user name')
         password= st.text_input('Chooes a password')
         finished =st.form_submit_button('Register')
+        
     if finished:
         # call a function
         # register to db
@@ -30,15 +39,20 @@ elif page=='Login':
         st.write('Hello', user_name)
     
 
+#st.title('MODEL')
 chosen_model= st.sidebar.selectbox('Please select a model', ['Text Generator', 'Sentimental Analysis', 'QA'])
+
 if chosen_model == 'QA':
-    user_text_input = st.text_input('What say you?, text please')
+    user_text_input = st.text_input('Please type below')
     user_question= st.text_input('.. and the question?')
     st.button('Send')
     # to db samt to ml via api etc
 else:
-    user_text_input = st.text_input('What say you?')
+    user_text_input = st.text_input('Please type below')
     st.button('Send')
+
+
+
 
 
 
