@@ -16,7 +16,7 @@ class API_Requests:
 
     def start_qa_model():
         return API_Requests._make_request(API_Requests.models[0])
-
+ 
     def start_generator_model():
         return API_Requests._make_request(API_Requests.models[1])
 
