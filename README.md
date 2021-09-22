@@ -11,10 +11,10 @@ Zeynep Wåke
 - README.md - Du läser det just nu :D
 - 01_gruppuppgift.pdf - Assigment's description
 - requirements.txt - Used Python packages
+- API_interface.py - API Integration
 - ML_API.py - This is the Main StreamLit Program
-- Class_def.py
-- DB_Handling.py
-- Utils.py - Some help_function
+- DB_Handling.py - SQLite3 - DataBase managing
+- Utils.py - Some help_function if it is needed
 
 # Environment
 - Windows
@@ -24,9 +24,11 @@ Zeynep Wåke
 
 
 # How to start the program
-Innan du startar programmet bra att veta:
-
-För att starta programmet ge commandon i din terminal:  
-> streamlit run ML_API.py  
+1. step - Start your dedicated Environment for this Program :)
+2. step - Start the ML-Model server from the ..\ec-ml-models REPO's DIR:
+> python src/main.py  
+3. step - För att starta programmet ge commandon i din terminal:  
+> streamlit run ML_API.py
+4. GUI poppar upp i Internet Explorer eller i Google
 
 
