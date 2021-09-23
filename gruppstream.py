@@ -5,38 +5,52 @@ import DB_Handling
 from API_interface import API_Requests
 #import db_class_test
 
-#ML_db = DB_Handling.MLModel_DB('DB_ML_History.db')
-
-
 st.title('Models by Jakob, Szandra and Zeynep!')
+
+page = st.sidebar.selectbox('Which page would you like to see?',
+                    ['Register', 'Login'])
 
 st.write('Please register or login :)')
 
-
 #page = st.button('Register ') # add to db
 #page = st.button('Login ') # compare to db
-register = st.sidebar.button('Register') # add to db
-login = st.sidebar.button('Login') # compare to db
-history = st.sidebar.button('My history') # connect to db
-st.text(register)
-st.text(login)
+#register = st.sidebar.button('Register') # add to db
+#login = st.sidebar.button('Login') # compare to db
+#history = st.sidebar.button('My history') # connect to db
+#st.text(register)
+#st.text(login)
 
 #if page == 'login_screen':
 
-if register:
+if page == "Register":
+    ML_db = DB_Handling.MLModel_DB('DB_ML_History.db')
+    st.header('You are on Registration Page')
     with st.form('Register'):
-        ML_db = DB_Handling.MLModel_DB('DB_ML_History.db')
+        col1, col2 = st.columns(2)
+        with col1:
+            first_name =st.text_input('Enter yourname')
+            last_name =st.text_input('Enter your last name')
+        with col2:
+            user_name = st.text_input('Please enter your user name')
+            password = st.text_input('Chooes a password')
+        doit =st.form_submit_button('Submit')
 
-        user_name = st.text_input('Please enter your user name')
-        password = st.text_input('Chooes a password')
-        first_name =st.text_input('Enter yourname')
-        last_name =st.text_input('Enter your last name')
-        finished =st.form_submit_button('Register')
+        #finished =st.form_submit_button('Register')
         
-        if finished:
-        # call a function
-        # register to db
-            ML_db.create_user(user_name, password, first_name, last_name)
+        if doit:
+            if ML_db.chk_account_if_exists(user_name):
+                st.write('Accountname exists. Try another one.')
+            else:
+                ML_db.create_user(user_name, password, first_name, last_name)
+            st.write('You are registered. Please Log In')
+else:
+    st.header('Please Login')
+    
+
+
+
+    #Här kommer alla kod för Sida 2
+            #ML_db.create_user(user_name, password, first_name, last_name)
             
         
 
