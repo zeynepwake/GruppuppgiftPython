@@ -1,34 +1,46 @@
 import streamlit as st
-#from PIL import image
+import sqlite3
+import pandas as pd
+import DB_Handling
+from API_interface import API_Requests
+#import db_class_test
 
-#from API_interface.py import *#
+#ML_db = DB_Handling.MLModel_DB('DB_ML_History.db')
 
-#[theme]
-#base="light"
-#primaryColor="purple"
 
 st.title('Models by Jakob, Szandra and Zeynep!')
 
-page = st.sidebar.button('Register') # add to db
-page = st.sidebar.button('Login') # compare to db
+st.write('Please register or login :)')
+
+
+#page = st.button('Register ') # add to db
+#page = st.button('Login ') # compare to db
+register = st.sidebar.button('Register') # add to db
+login = st.sidebar.button('Login') # compare to db
 history = st.sidebar.button('My history') # connect to db
+st.text(register)
+st.text(login)
 
+#if page == 'login_screen':
 
-if page =='Register':
-    with st.form('New User'):
-    #st.write('New User')
+if register:
+    with st.form('Register'):
+        ML_db = DB_Handling.MLModel_DB('DB_ML_History.db')
+
         user_name = st.text_input('Please enter your user name')
-        password= st.text_input('Chooes a password')
+        password = st.text_input('Chooes a password')
+        first_name =st.text_input('Enter yourname')
+        last_name =st.text_input('Enter your last name')
         finished =st.form_submit_button('Register')
         
-    if finished:
+        if finished:
         # call a function
         # register to db
+            ML_db.create_user(user_name, password, first_name, last_name)
+            
+        
 
-        pass
-
-
-elif page=='Login':
+elif login:
     with st.form('Login'):
         user_name = st.text_input('Please enter your user name')
         password= st.text_input('Enter your password')
@@ -37,6 +49,8 @@ elif page=='Login':
         # call a function,
         # compare to db
         st.write('Hello', user_name)
+        DB_Handling.MLModel_DB().login(user_name, password)
+
     
 
 #st.title('MODEL')
@@ -50,10 +64,6 @@ if chosen_model == 'QA':
 else:
     user_text_input = st.text_input('Please type below')
     st.button('Send')
-
-
-
-
 
 
 
