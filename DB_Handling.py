@@ -94,7 +94,8 @@ class MLModel_DB():
             return None
         user_id_key = row[0]
         self.cur = self.db.cursor()
-        df_hist = pd.read_sql(f"""SELECT user_id, model_id, time, context, response
-                                FROM histories
-                                WHERE user_id = {user_id_key}""", self.db)
+        df_hist = pd.read_sql(f"""SELECT account_name, name, context, question
+                    FROM users, models, histories
+                    WHERE (histories.user_id = {user_id_key}) and
+                    (histories.user_id = users.id) and (histories.model_id = models.id)""", self.db)
         return df_hist
