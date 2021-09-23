@@ -79,3 +79,19 @@ class API_Requests:
         data = {"context": context}
         r = requests.post(API_Requests.url + '/sentiment_analysis', json=data)
         return r
+
+    def post_image(file) -> requests.models.Response:
+        if API_Requests.current_model == None:
+            print('Select a model')
+            return
+        data = {'file':file}
+        r = requests.post('http://localhost:8000/classify_image', files=data)
+        return r
+
+    def change_image_class(class1: str, class2: str, class3: str) -> requests.models.Response:
+        if API_Requests.current_model == None:
+            print('Select a model')
+            return
+        data = {"class_1": class1, "class_2": class2, "class_3": class3}
+        r = requests.put('http://localhost:8000/change_classes', json=data)
+        return r
