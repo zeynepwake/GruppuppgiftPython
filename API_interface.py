@@ -3,28 +3,16 @@ import requests
 class API_Requests:
 
     url = 'http://localhost:8000'
-    models = [ 'question_answering', 'text_generator', 'sentiment_analysis', 'image_classifier' ]
+    models = ['text_generator', 'sentiment_analysis', 'image_classifier' ]
     current_model = None
 
     #--------------------------------------------------------#
     #Methods for starting different models from the API
     #--------------------------------------------------------#
-    def _make_request(model):
+    def start_model(model):
             r = requests.post(API_Requests.url + '/start', json = { 'name' : model})
             API_Requests.current_model = model
             return r
-
-    def start_qa_model():
-        return API_Requests._make_request(API_Requests.models[0])
-
-    def start_generator_model():
-        return API_Requests._make_request(API_Requests.models[1])
-
-    def start_sentiment_model():
-        return API_Requests._make_request(API_Requests.models[2])
-
-    def start_image_model():
-        return API_Requests._make_request(API_Requests.models[3])
     #--------------------------------------------------------#
     #--------------------------------------------------------#
 
