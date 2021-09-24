@@ -41,9 +41,9 @@ elif page == 'Login':
         user_name = st.text_input('Please enter your user name')
         password = st.text_input('Enter your password')
         doit = st.form_submit_button('Submit')
-    if doit:
-        ML_db.login()
-        st.write('You are in')
+        if doit:
+            ML_db.login(user_name, password)
+            st.write('You are in')
 
 elif page == 'History':
     st.header('Your Search History')
