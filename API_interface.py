@@ -31,7 +31,7 @@ class API_Requests:
             print('Select a model')
             return
         data = {"context": context, "question": question}
-        r = requests.post(API_Requests.url + '/qa', json=data)
+        r = requests.post(API_Requests.url + 'qa', json=data)
         return r
 
     def post_generator(context: str) -> requests.models.Response:

@@ -65,6 +65,22 @@ if page == 'Models':
             response = API_Requests.post_generator(user_text_input)
             st.write(response.json())
 
+        elif model =='sentiment_analysis':
+            user_text_input = st.text_input("Please type below")
+            response =  API_Requests.post_sentiment(user_text_input)
+            st.write(response.json())
+
+        elif model =='qa':
+            user_text_input = st.text_input("Please type below")
+            question = st.text_input("What would you like to ask?")
+            response =  API_Requests.post_qa(user_text_input, question)
+            st.write(response.json())
+
+            
+        
+
+
+
 
 
 
