@@ -76,7 +76,7 @@ if page == 'Models':
             response =  API_Requests.post_qa(user_text_input, question)
             st.write(response.json())
 
-            
+
         
 
 

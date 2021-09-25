@@ -3,7 +3,7 @@ import requests
 class API_Requests:
 
     url = 'http://localhost:8000'
-    models = ['','question_answering', 'text_generator', 'sentiment_analysis', 'image_classifier' ]
+    models = ['','qa', 'text_generator', 'sentiment_analysis', 'image_classifier' ]
     current_model = None
 
     #--------------------------------------------------------#
@@ -30,8 +30,8 @@ class API_Requests:
         if API_Requests.current_model == None:
             print('Select a model')
             return
-        data = {"context": context, "question": question}
-        r = requests.post(API_Requests.url + 'qa', json=data)
+        body = {"context": context, "question": question}
+        r = requests.post(API_Requests.url + '/qa', json=body)
         return r
 
     def post_generator(context: str) -> requests.models.Response:
