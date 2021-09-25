@@ -60,4 +60,11 @@ if page == 'Models':
             API_Requests.start_model(model)
             st.write('Model started')
 
-        if model_choice == '':
+        if model == 'text_generator':
+            user_text_input = st.text_input('Please type below')
+            response = API_Requests.post_generator(user_text_input)
+            st.write(response.json())
+
+
+
+
