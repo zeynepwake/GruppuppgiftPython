@@ -40,7 +40,7 @@ if page == 'Register':
         last_name =st.text_input('Enter your last name')
     with col2:
         user_name = st.text_input('Please enter your user name')
-        password = st.text_input('Choose a password')
+        password = st.text_input('Choose a password', type='password')
         if st.button('Register'):
             if not ml_db.chk_account_if_exists(user_name):
                 ml_db.create_user(user_name, password, first_name, last_name)
@@ -59,3 +59,5 @@ if page == 'Models':
         if st.button('Start model'):
             API_Requests.start_model(model)
             st.write('Model started')
+
+        if model_choice == '':
