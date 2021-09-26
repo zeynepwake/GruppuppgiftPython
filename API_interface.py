@@ -3,7 +3,7 @@ import requests
 class API_Requests:
 
     url = 'http://localhost:8000'
-    models = ['qa', 'text_generator', 'sentiment_analysis', 'image_classifier' ]
+    models = ['question_answering', 'text_generator', 'sentiment_analysis', 'image_classifier' ]
     current_model = None
 
     #--------------------------------------------------------#
