@@ -117,18 +117,10 @@ if page == 'Models':
                                         answer, score)
         with col2:
             df_log = ml_db.log_query(st.session_state['user'])
-            if df_log is None:
-                print('It seams this is your first test. Cool :)')
+            if df_log.empty:
+                st.write('It seams this is your first test. Cool :)')
             else:
-                st.write('Your earlier MLModel tests')
-                gridoption = GridOptionsBuilder()
-                grid_op = gridoption.configure_selection(selection_mode="single")
-                grid_response = AgGrid(df_log, width='100%', height=300,
-                                        fit_columns_on_grid_load=True,
-                                        gridOptions=grid_op ,data_return_mode='as_input',
-                                        update_mode='SELECTION_CHANGED')
-                st.write(grid_response)
-                selected = grid_response['selected_rows']
-                selected_df = pd.DataFrame(selected)
-                st.dataframe(selected_df) # CHK This with AgGrid
-                send_to_API = st.button('Test API')
+                df_view = df_log[df_log['name'] == model]
+                st.dataframe(df_view[['context', 'question']])
+                selected_index = st.number_input('Select index', min_value=0, max_value=len(df_log)-1, step=1)
+                st.dataframe(df_view[['context', 'question']].iloc[int(selected_index),:])
