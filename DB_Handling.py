@@ -1,8 +1,10 @@
 import sqlite3
-import pandas as pd
 from datetime import datetime
+import pandas as pd
 
 class MLModel_DB():
+    """Class definition to ML(MachineLearning) model Testing
+    """
 
     def __init__(self, source: str):
         """This is the initializer of the Class
@@ -19,7 +21,8 @@ class MLModel_DB():
         """This method creates the DataBase's structure:
             Table "models" (PK id, name)
             Table "users" (PK id, account_name, pwd, first_name, last_name)
-            Table "histories" (PK id, FK user_id, FK model_id, time, context, question, score, response)
+            Table "histories" (PK id, FK user_id, FK model_id, time,
+                                context, question, score, response)
         """
         self.cur.execute('''CREATE TABLE IF NOT EXISTS models(
                     id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -52,12 +55,12 @@ class MLModel_DB():
         Returns:
             bool: Value is True if the "account_name" exists or False otherwise
         """
-        chkOK = False 
+        chk_ok = False
         df = pd.read_sql("SELECT account_name FROM users", self.db)
         users = df['account_name'].tolist()
         if account_name in users:
-            chkOK = True
-        return chkOK
+            chk_ok = True
+        return chk_ok
 
     def create_user(self, account_name: str, pwd: str, first_name: str, last_name: str):
         """This method creates a User in the DataBase's "users" Table with the given arguments
@@ -97,9 +100,10 @@ class MLModel_DB():
         Args:
             user_name (str): User's Account Name
             user_pwd (str): User's Password
-        
+
         Returns:
-            pd.DataFrame: A DataRow with the User's data: Account Name, Password, First name, Last name
+            pd.DataFrame: A DataRow with the User's data:
+                        Account Name, Password, First name, Last name
         """
         self.cur = self.db.cursor()
         df = pd.read_sql(f"""SELECT account_name, pwd, first_name, last_name FROM users
@@ -115,7 +119,7 @@ class MLModel_DB():
         Args:
             user_name (str): User's Account Name
             user_pwd (str): User's Password
-        
+
         Returns:
             bool: True if the Log is created, or False otherwise
         """
@@ -144,7 +148,7 @@ class MLModel_DB():
 
         Args:
             user_name (str): User's Account Name
-        
+
         Returns:
             pd.DataFrame: A joined DataSet sorted by user_name from the DataBase:
                         users.account_name, models.name, histories.context, histories.question

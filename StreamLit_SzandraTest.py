@@ -53,3 +53,15 @@ else: #LOGIN Section
                         send_to_API = st.form_submit_button('Send')
             else:
                 st.write('This account name does not exists. Tyr with another one, please')
+
+#MOdul Section - DataFrame
+#gridoption = GridOptionsBuilder()
+#grid_op = gridoption.configure_selection(selection_mode="single")
+#grid_response = AgGrid(df_log, width='100%', height=300,
+#                        fit_columns_on_grid_load=True,
+#                        gridOptions=grid_op ,data_return_mode='as_input')
+#st.write(grid_response)
+#selected = grid_response['selected_rows']
+#selected_df = pd.DataFrame(selected)
+#st.dataframe(selected_df) # CHK This with AgGrid
+#send_to_API = st.button('Test API')
