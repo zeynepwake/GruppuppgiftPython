@@ -28,7 +28,7 @@ Zeynep Wåke
 - Please clone this to your computer
 - Follow its README to create en appropriate Environment
 
-2. You need to create an appropriate Environment - Use requirements.txt in this REPO
+2. You need to create an appropriate Environment for the Program also - Use requirements.txt in this REPO
 
 
 # How to start the program
