@@ -82,36 +82,39 @@ if page == 'Models':
             else:
                 if model == 'text_generator':
                     user_text_input = st.text_input('Please type below')
-                    response = API_Requests.post_generator(user_text_input)
-                    st.write(response.json())
-                    response_data = response.json()
-                    answer = response_data['generated_text']
-                    ml_db.create_log(st.session_state['user'], model,
-                                    user_text_input, None,
-                                    answer, None)
+                    if st.button('Submit input'):
+                        response = API_Requests.post_generator(user_text_input)
+                        st.write(response.json())
+                        response_data = response.json()
+                        answer = response_data['generated_text']
+                        ml_db.create_log(st.session_state['user'], model,
+                                        user_text_input, None,
+                                        answer, None)
 
                 elif model =='sentiment_analysis':
                     user_text_input = st.text_input("Please give your context for testing:")
-                    response =  API_Requests.post_sentiment(user_text_input)
-                    st.write(response.json())
-                    response_data = response.json()
-                    score = response_data['score']
-                    answer = response_data['sentiment_label']
-                    ml_db.create_log(st.session_state['user'], model,
-                                    user_text_input, None,
-                                    answer, score)
+                    if st.button('Submit input'):
+                        response =  API_Requests.post_sentiment(user_text_input)
+                        st.write(response.json())
+                        response_data = response.json()
+                        score = response_data['score']
+                        answer = response_data['sentiment_label']
+                        ml_db.create_log(st.session_state['user'], model,
+                                        user_text_input, None,
+                                        answer, score)
 
                 elif model =='question_answering':
                     user_text_input = st.text_input("Please type below")
                     question = st.text_input("What would you like to ask?")
-                    response = API_Requests.post_qa(user_text_input, question)
-                    st.write(response.json())
-                    response_data = response.json()
-                    score = response_data['score']
-                    answer = response_data['answer']
-                    ml_db.create_log(st.session_state['user'], model,
-                                    user_text_input, question,
-                                    answer, score)
+                    if st.button('Submit input'):
+                        response = API_Requests.post_qa(user_text_input, question)
+                        st.write(response.json())
+                        response_data = response.json()
+                        score = response_data['score']
+                        answer = response_data['answer']
+                        ml_db.create_log(st.session_state['user'], model,
+                                        user_text_input, question,
+                                        answer, score)
         with col2:
             df_log = ml_db.log_query(st.session_state['user'])
             if df_log is None:
