@@ -1,10 +1,8 @@
-######################################        Under construction
 #Imports
 import os.path
+from numpy import empty
 from requests.sessions import Request
 import streamlit as st
-#import pandas as pd
-
 import DB_Handling
 from API_interface import API_Requests
 
@@ -14,6 +12,22 @@ def intro():
     return
 
 def main_program():
+    """
+    Summary: this model interagerar med en maskininlärningsmodell via ett API i fil-namn API_interface i repot. 
+    Datan sedan sparas i en databas med hjälp av sqlite3 DB_Handling. Datan som användaren anger kan vid ett senare 
+    tillfälle väljas och återanvändas för test. 
+
+    Vi har valt att använda 3 av 4 modeller, Text Generator, Sentiment Analysis och Question & Answering.
+
+    Navigera mellan  registrera, login och model testing sidor att använda vår app. 
+
+    Vi ställer några krav på användaren:
+    - Användaren behöver registrera sig och logga in inför val av testmodel.
+    - Inför varje test eller vid ändring av test model bör vald model omstartas.
+    - I fall användaren lämnas ett fält tomt visas felmeddelande, användaren måste mata in text för att kunna använda modellerna.
+
+
+    """
     st.set_page_config(layout = "wide")
     st.header('ML ModelTesting Program by Jakob, Szandra and Zeynep!')
 
@@ -32,7 +46,6 @@ def main_program():
 
     #Sidebar definition
     page = st.sidebar.selectbox('Page', ['Register', 'Login', 'Models'])
-    st.sidebar.warning('Please choose a page to do a Registration or a Login first :)')
     if st.sidebar.button('Log out and Close'):
         st.session_state['logged_in'] = False
         st.write("That's all folks :) Thanks for now.")
@@ -61,12 +74,12 @@ def main_program():
         if st.button('Login'):
             df = ml_db.login(username, password)
             if df.empty:
-                st.write('Account name or password is incorrect, please try again!')
+                st.warning('Account name or password is incorrect, please try again!')
             else:
                 st.session_state['logged_in'] = True
                 st.session_state['user'] = username
                 #Here we have the First and the last name also...
-                st.write('You are logged in. Please test your model on "Models" page, check the sidebar.')
+                st.success('You are logged in. Please test your model on "Models" page, check the sidebar.')
 
     if page == 'Register':
         col1, col2 = st.columns(2)
@@ -79,7 +92,7 @@ def main_program():
             if st.button('Register'):
                 if not ml_db.chk_account_if_exists(user_name):
                     ml_db.create_user(user_name, password, first_name, last_name)
-                    st.write('User registered. Please log in on the "Login" page')
+                    st.success('User registered. Please log in on the "Login" page')
                 else:
                     st.warning('Accountname already exists. Please try another one.')
 
@@ -94,9 +107,10 @@ def main_program():
                 model = st.selectbox('Select a model', API_Requests.models)
                 #st.write(st.session_state['model_started'])
                 if st.button('Start model'):
-                    API_Requests.start_model(model)
-                    st.session_state['model_started'] = True
-                    st.session_state['current_model'] = model
+                    with st.spinner(text = 'Model is starting...'):
+                        API_Requests.start_model(model)
+                        st.session_state['model_started'] = True
+                        st.session_state['current_model'] = model
                     st.success('Model started')
                 
                 if not st.session_state['model_started'] is True:
@@ -105,54 +119,70 @@ def main_program():
                     if model == 'text_generator' and st.session_state['current_model'] == model:
                         user_text_input = st.text_input('Please type below')
                         if st.button('Submit input'):
-                            response = API_Requests.post_generator(user_text_input)
-                            st.write(response.json())
-                            response_data = response.json()
-                            answer = response_data['generated_text']
-                            ml_db.create_log(st.session_state['user'], model,
-                                            user_text_input, None,
-                                            answer, None)
+                            if user_text_input == '':
+                                st.error('Provide input')
+                            else:
+                                with st.spinner(text = 'Waiting for response...'):
+                                    response = API_Requests.post_generator(user_text_input)
+                                st.write(response.json())
+                                response_data = response.json()
+                                answer = response_data['generated_text']
+                                ml_db.create_log(st.session_state['user'], model,
+                                                user_text_input, None,
+                                                answer, None)
 
                     elif model =='sentiment_analysis' and st.session_state['current_model'] == model:
                         user_text_input = st.text_input("Please give your context for testing:")
                         if st.button('Submit input'):
-                            response =  API_Requests.post_sentiment(user_text_input)
-                            st.write(response.json())
-                            response_data = response.json()
-                            score = response_data['score']
-                            answer = response_data['sentiment_label']
-                            ml_db.create_log(st.session_state['user'], model,
-                                            user_text_input, None,
-                                            answer, score)
+                            if user_text_input == '':
+                                st.error('Provide input')
+                            else:
+                                with st.spinner(text = 'Waiting for response...'):
+                                    response =  API_Requests.post_sentiment(user_text_input)
+                                st.write(response.json())
+                                response_data = response.json()
+                                score = response_data['score']
+                                answer = response_data['sentiment_label']
+                                ml_db.create_log(st.session_state['user'], model,
+                                                user_text_input, None,
+                                                answer, score)
 
                     elif model =='question_answering' and st.session_state['current_model'] == model:
                         user_text_input = st.text_input("Please type below")
                         question = st.text_input("What would you like to ask?")
                         if st.button('Submit input'):
-                            response = API_Requests.post_qa(user_text_input, question)
-                            st.write(response.json())
-                            response_data = response.json()
-                            score = response_data['score']
-                            answer = response_data['answer']
-                            ml_db.create_log(st.session_state['user'], model,
-                                            user_text_input, question,
-                                            answer, score)
-            with col2:
+                            if user_text_input == '' or question == '':
+                                st.error('Provide input')
+                            else:
+                                with st.spinner(text = 'Waiting for response...'):
+                                    response = API_Requests.post_qa(user_text_input, question)
+                                st.write(response.json())
+                                response_data = response.json()
+                                score = response_data['score']
+                                answer = response_data['answer']
+                                ml_db.create_log(st.session_state['user'], model,
+                                                user_text_input, question,
+                                                answer, score)
+            with col2: 
+                #history/search function. in case user is logged in they can reach their own search history.
                 df_log = ml_db.log_query(st.session_state['user'])
                 df_view = df_log[df_log['name'] == model]
-                if df_view.empty or st.session_state['current_model'] != model:
-                    st.warning('It seems like this is your first test. Cool :)... Do not forget to start the correct model')
+                if st.session_state['current_model'] != model:
+                    st.warning('Do not forget to start the model!')
+                elif df_view.empty:
+                    st.write('It seems like you have no history yet :) ')
+                    
                 else:
-                    st.write(' Do not forget to start the correct model')
                     st.dataframe(df_view[['context', 'question', 'score', 'response']])
                     selected_index = st.selectbox('Select index',list(df_view.index))
                     selected_element = df_view.loc[int(selected_index),:]
-                    st.write(selected_element['context'])
+                    #st.write(selected_element['context'])
 
                     if st.button('Submit old input'):
                         #Sentiment anaysis block
                         if model == 'sentiment_analysis':
-                            response = API_Requests.post_sentiment(selected_element.loc['context'])
+                            with st.spinner(text = 'Waiting for response...'):
+                                response = API_Requests.post_sentiment(selected_element.loc['context'])
                             st.write(response.json())
                             response_data = response.json()
                             score = response_data['score']
@@ -162,7 +192,8 @@ def main_program():
                                             answer, score)
                         #Q&A block
                         if model == 'question_answering':
-                            response = API_Requests.post_qa(selected_element.loc['context'],
+                            with st.spinner(text = 'Waiting for response...'):
+                                response = API_Requests.post_qa(selected_element.loc['context'],
                                                                     selected_element.loc['question'])
                             st.write(response.json())
                             response_data = response.json()
@@ -173,7 +204,8 @@ def main_program():
                                             answer, score)
                         #Text generation block
                         if model == 'text_generator':
-                            response = API_Requests.post_generator(selected_element.loc['context'])
+                            with st.spinner(text = 'Waiting for response...'):
+                                response = API_Requests.post_generator(selected_element.loc['context'])
                             st.write(response.json())
                             response_data = response.json()
                             answer = response_data['generated_text']
