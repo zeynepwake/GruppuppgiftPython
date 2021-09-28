@@ -1,4 +1,5 @@
 import os.path
+import requests
 import streamlit as st
 import pandas as pd
 from st_aggrid import AgGrid
@@ -117,10 +118,22 @@ if page == 'Models':
                                         answer, score)
         with col2:
             df_log = ml_db.log_query(st.session_state['user'])
-            if df_log.empty:
-                st.write('It seams this is your first test. Cool :)')
+            df_view = df_log[df_log['name'] == model]
+            if df_view.empty:
+                st.write('It seams this is your first test. Cool :)... Do not forget to start the model')
             else:
-                df_view = df_log[df_log['name'] == model]
                 st.dataframe(df_view[['context', 'question']])
-                selected_index = st.number_input('Select index', min_value=0, max_value=len(df_log)-1, step=1)
-                st.dataframe(df_view[['context', 'question']].iloc[int(selected_index),:])
+                selected_index = st.selectbox('Select index',list(df_view.index))
+                selected_element = df_view.loc[int(selected_index),:]
+                st.write(selected_element.loc['context'])
+                if st.button('Submit old input'):
+                    if model == 'sentiment_analysis':
+                        response = API_Requests.post_sentiment(selected_element.loc['context'])
+                        st.write(response.json())
+                    if model == 'question_answering':
+                        response = API_Requests.post_qa(selected_element.loc['context'],
+                                                                selected_element.loc['question'])
+                        st.write(response.json())
+                    if model == 'text_generator':
+                        response = API_Requests.post_generator(selected_element.loc['context'])
+                        st.write(response.json())
