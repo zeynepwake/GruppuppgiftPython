@@ -1,7 +1,5 @@
 #Imports
 import os.path
-from numpy import empty
-from requests.sessions import Request
 import streamlit as st
 import DB_Handling
 from API_interface import API_Requests
@@ -9,23 +7,24 @@ from API_interface import API_Requests
 #Definitions
 def intro():
     print("Hello this is StudieGrupp1's ML Model Testing Program :)")
-    return
 
 def main_program():
     """
-    Summary: this model interagerar med en maskininlärningsmodell via ett API i fil-namn API_interface i repot. 
-    Datan sedan sparas i en databas med hjälp av sqlite3 DB_Handling. Datan som användaren anger kan vid ett senare 
-    tillfälle väljas och återanvändas för test. 
+    Summary: this model interagerar med en maskininlärningsmodell via ett API
+    i fil-namn API_interface i repot. Datan sedan sparas i en databas med
+    hjälp av sqlite3 DB_Handling. Datan som användaren anger kan vid ett senare
+    tillfälle väljas och återanvändas för test.
 
-    Vi har valt att använda 3 av 4 modeller, Text Generator, Sentiment Analysis och Question & Answering.
+    Vi har valt att använda 3 av 4 modeller, Text Generator, Sentiment Analysis och
+    Question & Answering.
 
-    Navigera mellan  registrera, login och model testing sidor att använda vår app. 
+    Navigera mellan  registrera, login och model testing sidor att använda vår app.
 
     Vi ställer några krav på användaren:
     - Användaren behöver registrera sig och logga in inför val av testmodel.
     - Inför varje test eller vid ändring av test model bör vald model omstartas.
-    - I fall användaren lämnas ett fält tomt visas felmeddelande, användaren måste mata in text för att kunna använda modellerna.
-
+    - I fall användaren lämnas ett fält tomt visas felmeddelande,
+        användaren måste mata in text för att kunna använda modellerna.
 
     """
     st.set_page_config(layout = "wide")
@@ -79,9 +78,11 @@ def main_program():
                 st.session_state['logged_in'] = True
                 st.session_state['user'] = username
                 #Here we have the First and the last name also...
-                st.success('You are logged in. Please test your model on "Models" page, check the sidebar.')
+                st.success(f"""You are logged in. Please test your model
+                            on "Models" page, check the sidebar.""")
 
     if page == 'Register':
+        # user register page, controll if the user-id is taken, if not register.
         col1, col2 = st.columns(2)
         with col1:
             first_name =st.text_input('Enter your first name')
@@ -97,6 +98,7 @@ def main_program():
                     st.warning('Accountname already exists. Please try another one.')
 
     if page == 'Models':
+        # model-page. After the user logs in can she choose and start a model.
         if not st.session_state['logged_in'] is True:
             st.warning('Please log in on the "Login" page')
         else:
@@ -112,7 +114,7 @@ def main_program():
                         st.session_state['model_started'] = True
                         st.session_state['current_model'] = model
                     st.success('Model started')
-                
+
                 if not st.session_state['model_started'] is True:
                     st.warning('Please choose a model')
                 else:
@@ -163,20 +165,18 @@ def main_program():
                                 ml_db.create_log(st.session_state['user'], model,
                                                 user_text_input, question,
                                                 answer, score)
-            with col2: 
-                #history/search function. in case user is logged in they can reach their own search history.
+            with col2:
+                #history/search function.After user logs in they can reach their own search history.
                 df_log = ml_db.log_query(st.session_state['user'])
                 df_view = df_log[df_log['name'] == model]
                 if st.session_state['current_model'] != model:
                     st.warning('Do not forget to start the model!')
                 elif df_view.empty:
                     st.write('It seems like you have no history yet :) ')
-                    
                 else:
                     st.dataframe(df_view[['context', 'question', 'score', 'response']])
                     selected_index = st.selectbox('Select index',list(df_view.index))
                     selected_element = df_view.loc[int(selected_index),:]
-                    #st.write(selected_element['context'])
 
                     if st.button('Submit old input'):
                         #Sentiment anaysis block
@@ -190,18 +190,21 @@ def main_program():
                             ml_db.create_log(st.session_state['user'], model,
                                             selected_element.loc['context'], None,
                                             answer, score)
+
                         #Q&A block
                         if model == 'question_answering':
                             with st.spinner(text = 'Waiting for response...'):
                                 response = API_Requests.post_qa(selected_element.loc['context'],
-                                                                    selected_element.loc['question'])
+                                                                selected_element.loc['question'])
                             st.write(response.json())
                             response_data = response.json()
                             score = response_data['score']
                             answer = response_data['answer']
                             ml_db.create_log(st.session_state['user'], model,
-                                            selected_element.loc['context'], selected_element.loc['question'],
+                                            selected_element.loc['context'],
+                                            selected_element.loc['question'],
                                             answer, score)
+
                         #Text generation block
                         if model == 'text_generator':
                             with st.spinner(text = 'Waiting for response...'):
