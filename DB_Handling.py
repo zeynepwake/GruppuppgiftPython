@@ -160,7 +160,7 @@ class MLModel_DB():
             return None
         user_id_key = row[0]
         self.cur = self.db.cursor()
-        df_hist = pd.read_sql(f"""SELECT account_name, name, context, question
+        df_hist = pd.read_sql(f"""SELECT account_name, name, context, question, score, response
                     FROM users, models, histories
                     WHERE (histories.user_id = {user_id_key}) and
                     (histories.user_id = users.id) and (histories.model_id = models.id)""", self.db)

@@ -5,8 +5,6 @@ Zeynep Wåke
 
 # Hej :) Det är vår Gruppupppgift - ML-Model API
 
-# o.O Under construction O.o
-
 # Filer som finns i REPO:
 - README.md - Good to know information about our ML Model Testing Program :D
 - requirements.txt - Necessary Python packages
@@ -14,12 +12,12 @@ Zeynep Wåke
 - API_interface.py - API Integration - Class and methods
 - DB_Handling.py - SQLite3 - DataBase managing - Class and methods
 - ML_API.py - This is the Main StreamLit Program
-- FlowChart_MLModelTesting.io - This is an OverView about how our Program works
+
 
 # Environment
 - Windows
 - Python 3.8
-- Packages: requests, pandas
+- Packages: requests, pandas, streamlit
 - For testing We used Jupiter NoteBook
 
 
@@ -27,6 +25,7 @@ Zeynep Wåke
 1. You need this ML Model REPO: https://github.com/NordAxon/ec-ml-models
 - Please clone this to your computer
 - Follow its README to create en appropriate Environment
+
 
 2. You need to create an appropriate Environment for the Program also - Use requirements.txt in this REPO
 

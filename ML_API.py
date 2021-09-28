@@ -13,14 +13,6 @@ def intro():
     print("Hello this is StudieGrupp1's ML Model Testing Program :)")
     return
 
-def post_hist_qa(ml_db: DB_Handling.MLModel_DB, user, response, model, user_text_input, question):
-    response_data = response.json()
-    score = response_data['score']
-    answer = response_data['answer']
-    ml_db.create_log(user, model,
-                    user_text_input, question,
-                    answer, score)
-
 def main_program():
     st.set_page_config(layout = "wide")
     st.header('ML ModelTesting Program by Jakob, Szandra and Zeynep!')
@@ -35,7 +27,8 @@ def main_program():
     if 'model_started' not in st.session_state:
         st.session_state['model_started'] = False
 
-    st.write(st.session_state['logged_in'])
+    if 'current_model' not in st.session_state:
+        st.session_state['current_model'] = None
 
     #Sidebar definition
     page = st.sidebar.selectbox('Page', ['Register', 'Login', 'Models'])
@@ -95,18 +88,21 @@ def main_program():
             st.warning('Please log in on the "Login" page')
         else:
             st.write(f"Logged in as {st.session_state['user']}")
+            st.write(f"Current model: {st.session_state['current_model']}")
             col1, col2 = st.columns([2,4])
             with col1:
                 model = st.selectbox('Select a model', API_Requests.models)
-                st.write(st.session_state['model_started'])
+                #st.write(st.session_state['model_started'])
                 if st.button('Start model'):
                     API_Requests.start_model(model)
                     st.session_state['model_started'] = True
+                    st.session_state['current_model'] = model
                     st.success('Model started')
+                
                 if not st.session_state['model_started'] is True:
                     st.warning('Please choose a model')
                 else:
-                    if model == 'text_generator':
+                    if model == 'text_generator' and st.session_state['current_model'] == model:
                         user_text_input = st.text_input('Please type below')
                         if st.button('Submit input'):
                             response = API_Requests.post_generator(user_text_input)
@@ -117,7 +113,7 @@ def main_program():
                                             user_text_input, None,
                                             answer, None)
 
-                    elif model =='sentiment_analysis':
+                    elif model =='sentiment_analysis' and st.session_state['current_model'] == model:
                         user_text_input = st.text_input("Please give your context for testing:")
                         if st.button('Submit input'):
                             response =  API_Requests.post_sentiment(user_text_input)
@@ -129,7 +125,7 @@ def main_program():
                                             user_text_input, None,
                                             answer, score)
 
-                    elif model =='question_answering':
+                    elif model =='question_answering' and st.session_state['current_model'] == model:
                         user_text_input = st.text_input("Please type below")
                         question = st.text_input("What would you like to ask?")
                         if st.button('Submit input'):
@@ -144,24 +140,27 @@ def main_program():
             with col2:
                 df_log = ml_db.log_query(st.session_state['user'])
                 df_view = df_log[df_log['name'] == model]
-                if df_view.empty:
-                    st.write('It seams this is your first test. Cool :)... Do not forget to start the model')
+                if df_view.empty or st.session_state['current_model'] != model:
+                    st.warning('It seems like this is your first test. Cool :)... Do not forget to start the correct model')
                 else:
-                    st.dataframe(df_view[['context', 'question']])
+                    st.write(' Do not forget to start the correct model')
+                    st.dataframe(df_view[['context', 'question', 'score', 'response']])
                     selected_index = st.selectbox('Select index',list(df_view.index))
                     selected_element = df_view.loc[int(selected_index),:]
-                    st.write(selected_element.loc['context'])
-                    st.write(selected_element.loc['question'])
+                    st.write(selected_element['context'])
+
                     if st.button('Submit old input'):
+                        #Sentiment anaysis block
                         if model == 'sentiment_analysis':
                             response = API_Requests.post_sentiment(selected_element.loc['context'])
                             st.write(response.json())
                             response_data = response.json()
                             score = response_data['score']
-                            answer = response_data['answer']
+                            answer = response_data['sentiment_analysis']
                             ml_db.create_log(st.session_state['user'], model,
-                                            user_text_input, question,
+                                            selected_element.loc['context'], None,
                                             answer, score)
+                        #Q&A block
                         if model == 'question_answering':
                             response = API_Requests.post_qa(selected_element.loc['context'],
                                                                     selected_element.loc['question'])
@@ -172,9 +171,16 @@ def main_program():
                             ml_db.create_log(st.session_state['user'], model,
                                             selected_element.loc['context'], selected_element.loc['question'],
                                             answer, score)
+                        #Text generation block
                         if model == 'text_generator':
                             response = API_Requests.post_generator(selected_element.loc['context'])
                             st.write(response.json())
+                            response_data = response.json()
+                            answer = response_data['generated_text']
+                            ml_db.create_log(st.session_state['user'], model,
+                                            selected_element.loc['context'], None,
+                                            answer, None)
+
 
 #Main area :)
 if __name__ == "__main__":
